@@ -1,0 +1,47 @@
+{
+  "name": "page-loader-shapurid",
+  "version": "0.0.1",
+  "bin": {
+    "page-loader": "dist/bin/page-loader.js"
+  },
+  "description": "My third Hexlet project",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
+    "eslint": "eslint",
+    "test": "jest  --env=node"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shapurid/backend-project-lvl3.git"
+  },
+  "author": "Ivan Korney",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shapurid/backend-project-lvl3/issues"
+  },
+  "homepage": "https://github.com/shapurid/backend-project-lvl3#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.7.7",
+    "@babel/core": "^7.7.7",
+    "@babel/node": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.9.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jest": "^23.3.0",
+    "jest": "^24.9.0",
+    "jest-cli": "^24.9.0",
+    "nock": "^11.7.2"
+  },
+  "dependencies": {
+    "axios": "^0.19.1",
+    "commander": "^4.1.0"
+  }
+}
