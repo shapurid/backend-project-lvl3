@@ -19,3 +19,9 @@
   <summary>Example</summary>
   <a href="https://asciinema.org/a/qOzn3IeubMM77A4IOF6SbPoIT" target="_blank"><img src="https://asciinema.org/a/qOzn3IeubMM77A4IOF6SbPoIT.svg" width="500" height="250"/></a>
 </details>
+
+<h3>Debugging</h3>
+<details>
+  <summary>Example</summary>
+  <a href="https://asciinema.org/a/91bvbdcuMbPJMX9MdTkzA5rSl" target="_blank"><img src="https://asciinema.org/a/91bvbdcuMbPJMX9MdTkzA5rSl.svg" width="500" height="250"/></a>
+</details>

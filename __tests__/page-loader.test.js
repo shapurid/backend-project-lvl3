@@ -22,6 +22,7 @@ beforeAll(async () => {
   expectedImgFileContent = await fs.readFile(getFixturePath('test_files/image.ico'));
   pathToTmpDir = await fs.mkdtemp(`${os.tmpdir()}/page-loader-test-`, 'utf8');
   nock('https://test.com')
+    .log(console.log)
     .get('/my/')
     .reply(200, fakeResponse)
     .get('/test/screen.css')
