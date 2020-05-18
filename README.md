@@ -17,7 +17,7 @@
 <h3>How does it works</h3>
 <details>
   <summary>Run example</summary>
-  <a href="https://asciinema.org/a/qOzn3IeubMM77A4IOF6SbPoIT" target="_blank"><img src="https://asciinema.org/a/qOzn3IeubMM77A4IOF6SbPoIT.svg" width="500" height="250"/></a>
+  <a href="https://asciinema.org/a/w1FNT0Oa272cYIH8DVkJUrVbe" target="_blank"><img src="https://asciinema.org/a/w1FNT0Oa272cYIH8DVkJUrVbe.svg" width="500" height="250"/></a>
 </details>
 <details>
   <summary>Debugging</summary>

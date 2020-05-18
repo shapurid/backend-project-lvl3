@@ -18,7 +18,7 @@ export const formHtmlFileName = (link) => {
 export const formLocalFilePath = (link, localResDir) => {
   const { dir, name } = path.parse(link);
   const linkWithoutExt = path.join(dir, name);
-  const nameOfLink = removeEndSlash(linkWithoutExt).replace(/[^\w]+/g, '-');
+  const nameOfLink = removeEndSlash(linkWithoutExt).replace(/[\W]/g, '-');
   const extOfFile = normalizeExt(link);
   return path.join(localResDir, `${nameOfLink.slice(1)}${extOfFile}`);
 };

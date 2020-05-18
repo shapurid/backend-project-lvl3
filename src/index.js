@@ -5,6 +5,7 @@ import { promises as fs } from 'fs';
 import cheerio from 'cheerio';
 import _ from 'lodash';
 import debug from 'debug';
+import Listr from 'listr';
 import { formHtmlFileName, formLocalFilePath } from './nameFormers';
 import errHandler from './errors';
 
@@ -48,8 +49,12 @@ const saveLocalResContent = (link, pathToFile) => axios({
 })
   .then((response) => response.data)
   .then((content) => {
-    log(`load link and save it in ${pathToFile}`);
-    return fs.writeFile(pathToFile, content);
+    const tasks = new Listr([{
+      title: `saving ${path.basename(pathToFile)}`,
+      task: () => fs.writeFile(pathToFile, content),
+    }], { concurrent: true, exitOnError: false });
+    log(`load ${link} to ${pathToFile}`);
+    return tasks.run();
   })
   .catch((err) => {
     console.error(errHandler(err));
