@@ -11,32 +11,55 @@ const getFixturePath = (fileName) => path.join(__dirname, '__fixtures__', fileNa
 
 let expectedHtml;
 let fakeResponse;
-let pathToTmpDir;
 let expectedCssFileContent;
 let expectedImgFileContent;
+let pathToTmpDir;
+let incorrectPath;
 
 beforeAll(async () => {
-  expectedHtml = await fs.readFile(getFixturePath('testAfter.html'), 'utf8');
-  fakeResponse = await fs.readFile(getFixturePath('test.html'), 'utf8');
-  expectedCssFileContent = await fs.readFile(getFixturePath('test_files/screen.css'), 'utf8');
-  expectedImgFileContent = await fs.readFile(getFixturePath('test_files/image.ico'));
-  pathToTmpDir = await fs.mkdtemp(`${os.tmpdir()}/page-loader-test-`, 'utf8');
+  const readingExpectedHtml = fs.readFile(getFixturePath('testAfter.html'), 'utf8');
+  const readingResponseHtml = fs.readFile(getFixturePath('test.html'), 'utf8');
+  const readingExpectedCss = fs.readFile(getFixturePath('test_files/screen.css'), 'utf8');
+  const readingExpectedImg = fs.readFile(getFixturePath('test_files/image.ico'), 'binary');
+  const makingTmpDir = fs.mkdtemp(`${os.tmpdir()}/page-loader-test-`, 'utf8');
+  [expectedHtml,
+    fakeResponse,
+    expectedCssFileContent,
+    expectedImgFileContent,
+    pathToTmpDir] = await Promise.all([readingExpectedHtml, readingResponseHtml,
+    readingExpectedCss, readingExpectedImg, makingTmpDir]);
+  incorrectPath = path.join(pathToTmpDir, 'wrongDir.txt');
+  await fs.copyFile(getFixturePath('wrongDir.txt'), incorrectPath);
+});
+
+beforeEach(() => {
   nock('https://test.com')
     .log(console.log)
-    .get('/my/')
+    .get('/my')
     .reply(200, fakeResponse)
     .get('/test/screen.css')
     .reply(200, expectedCssFileContent)
     .get('/test/image.ico')
-    .reply(200, expectedImgFileContent);
+    .reply(200, expectedImgFileContent)
+    .get('/about')
+    .reply(404);
 });
 
-test('test', async () => {
-  await loadPage('https://test.com/my/', pathToTmpDir);
-  const actualHtml = await fs.readFile(`${pathToTmpDir}/test-com-my.html`, 'utf8');
-  const actualCssFileContent = await fs.readFile(`${pathToTmpDir}/test-com-my_files/test-screen.css`, 'utf8');
-  const actualImgFileContent = await fs.readFile(`${pathToTmpDir}/test-com-my_files/test-image.ico`);
+test('page load testing', async () => {
+  await loadPage('https://test.com/my', pathToTmpDir);
+  const readingHtml = fs.readFile(`${pathToTmpDir}/test-com-my.html`, 'utf8');
+  const readingCss = fs.readFile(`${pathToTmpDir}/test-com-my_files/test-screen.css`, 'utf8');
+  const readingLocalResDir = fs.readdir(`${pathToTmpDir}/test-com-my_files`);
+  const [actualHtml, actualCssFileContent, filesInLocalResDir] = await Promise.all([readingHtml,
+    readingCss, readingLocalResDir]);
   expect(actualHtml).toBe(expectedHtml.trim());
   expect(actualCssFileContent).toBe(expectedCssFileContent);
-  expect(actualImgFileContent).toEqual(expectedImgFileContent);
+  expect(filesInLocalResDir.length).toBe(2);
+});
+
+test('errors testing', async () => {
+  await expect(loadPage('https://test.com/my', incorrectPath))
+    .rejects.toThrow(`ENOTDIR: '${incorrectPath}/test-com-my_files' is not a directory`);
+  await expect(loadPage('https://test.com/about', pathToTmpDir))
+    .rejects.toThrow("404: Page 'https://test.com/about' not found");
 });

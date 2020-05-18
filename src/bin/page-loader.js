@@ -12,7 +12,11 @@ program
   .option('--output [outputDirPath]', 'output dir', './')
   .action((webAdress, options) => {
     loadPage(webAdress, options.output)
-      .then(() => console.log(`Page ${webAdress} was loaded in ${displayPath(program.output)}`));
+      .then(() => console.log(`Page '${webAdress}' was loaded in '${displayPath(program.output)}'`))
+      .catch((err) => {
+        console.error(`${err.name}: ${err.message}`);
+        process.exitCode = 1;
+      });
   });
 
 program.parse(process.argv);
