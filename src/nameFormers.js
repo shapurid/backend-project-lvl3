@@ -1,15 +1,15 @@
-import url from 'url';
 import path from 'path';
 
 const removeEndSlash = (str) => (str.slice(-1) === '/' ? str.slice(0, -1) : str);
 
 const normalizeExt = (link) => {
-  const { pathname } = url.parse(link);
-  return path.extname(pathname);
+  const regexp = new RegExp('(\\?.*)$', 'i');
+  const linkWithoutQueryString = link.replace(regexp, '');
+  return path.extname(linkWithoutQueryString);
 };
 
 export const formHtmlFileName = (link) => {
-  const { hostname, pathname } = url.parse(link);
+  const { hostname, pathname } = new URL(link);
   const urlWithoutProtocol = path.join(hostname, pathname);
   const nameOfHtmlFile = removeEndSlash(urlWithoutProtocol).replace(/[^\w]+/g, '-');
   return nameOfHtmlFile;

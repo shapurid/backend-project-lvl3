@@ -5,7 +5,7 @@
 <h3>Installation:</h3>
 <details>
   <summary>Example</summary>
-  <a href="https://asciinema.org/a/53JNEu0wmr4uGscAFlKaoWdQz" target="_blank"><img src="https://asciinema.org/a/53JNEu0wmr4uGscAFlKaoWdQz.svg" width="500" height="250"/></a>
+  <a href="https://asciinema.org/a/MKlUNfmgGiQgT404i5g1bosq2" target="_blank"><img src="https://asciinema.org/a/MKlUNfmgGiQgT404i5g1bosq2.svg" width="500" height="250"/></a>
 </details>
 
 <h3>Information:</h3>

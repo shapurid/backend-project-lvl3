@@ -1,6 +1,6 @@
 {
   "name": "page-loader-shapurid",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "bin": {
     "page-loader": "dist/bin/page-loader.js"
   },
