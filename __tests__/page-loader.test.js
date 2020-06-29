@@ -8,7 +8,6 @@ nock.disableNetConnect();
 
 const getFixturePath = (fileName) => path.join(__dirname, '__fixtures__', fileName);
 
-
 let expectedHtml;
 let fakeResponse;
 let expectedCssFileContent;
