@@ -23,46 +23,43 @@ const getLinkFromNode = (node) => {
 };
 
 const isLocal = (checkedLink) => {
-  const regex = new RegExp('^(\\w)+://|([w]{3}.)', 'i');
-  return !regex.test(checkedLink);
+  try {
+    URL(checkedLink);
+    return false;
+  } catch {
+    return true;
+  }
 };
 
 const getLocalResLinksAndModifyHtml = (html, addr, localResDirPath) => {
   const $ = cheerio.load(html, { decodeEntities: false });
-  const urlsAndPaths = [];
   const baseName = path.basename(localResDirPath);
-
-  toPairs(searchedTag)
-    .forEach(([key, value]) => $(`${key}[${value}]`)
-      .filter((i, node) => {
-        const linkFromNode = getLinkFromNode(node);
-        return isLocal(linkFromNode);
-      })
-      .each((i, node) => {
-        const linkFromNode = getLinkFromNode(node);
-        const localPathToRes = formLocalFilePath(linkFromNode, baseName);
-        const absolutePathToRes = formLocalFilePath(linkFromNode, localResDirPath);
-        const linkUrl = new URL(linkFromNode, addr).href;
-        log(`URL is formed: ${linkUrl}`);
-        log(`local path to res is formed: '${localPathToRes}'`);
+  const urlsAndPaths = toPairs(searchedTag)
+    .flatMap(([key, value]) => $(`${key}[${value}]`)
+      .toArray()
+      .map(getLinkFromNode)
+      .filter(isLocal)
+      .map((link) => {
+        const uri = new URL(link, addr);
+        log(`URL is formed: ${uri}`);
+        const absolutePathToRes = formLocalFilePath(link, localResDirPath);
         log(`absolute path to res is formed: '${absolutePathToRes}'`);
-        urlsAndPaths.push([linkUrl, absolutePathToRes]);
-        $(node).attr(`${value}`, localPathToRes);
+        const localPathToRes = formLocalFilePath(link, baseName);
+        log(`local path to res is formed: '${localPathToRes}'`);
+        $(key).attr(value, localPathToRes);
+        return [uri, absolutePathToRes];
       }));
   log(`html was modified and ${urlsAndPaths.length} local links were extracted`);
   return { html: $.html(), urlsAndPaths };
 };
 
-const saveLocalResContent = (link, pathToFile) => {
-  log(`downloading content from '${link}'`);
-  return axios({
-    method: 'get',
-    url: link,
-    responseType: 'arraybuffer',
-  })
+const saveLocalResContent = (uri, pathToFile) => {
+  const { href } = uri;
+  log(`downloading content from '${href}'`);
+  return axios.get(href, { responseType: 'arraybuffer' })
     .then((response) => response.data)
     .then((content) => {
-      log(`saving content of '${link}' into '${pathToFile}'`);
+      log(`saving content of '${href}' into '${pathToFile}'`);
       return fs.writeFile(pathToFile, content);
     })
     .catch((err) => {
@@ -76,12 +73,11 @@ export default (webAdress, outputDirPath) => {
   const htmlFilePath = path.join(outputDirPath, `${baseName}.html`);
   const localResDirPath = path.join(outputDirPath, `${baseName}_files`);
   let modifiedHtmlAndLocalResContainer;
-  log('send GET request');
 
   return axios.get(webAdress)
     .then((response) => response.data)
     .then((html) => {
-      log(`received:\n${html}`);
+      log(`received html:\n${html}`);
       modifiedHtmlAndLocalResContainer = getLocalResLinksAndModifyHtml(html,
         webAdress, localResDirPath);
       const { urlsAndPaths } = modifiedHtmlAndLocalResContainer;
@@ -100,9 +96,9 @@ export default (webAdress, outputDirPath) => {
       const { html, urlsAndPaths } = modifiedHtmlAndLocalResContainer;
       const savingHtml = fs.writeFile(htmlFilePath, html, 'utf8');
       const tasks = new Listr(urlsAndPaths
-        .map(([link, pathToSave]) => {
+        .map(([uri, pathToSave]) => {
           const title = `saving ${path.basename(pathToSave)}`;
-          const task = () => saveLocalResContent(link, pathToSave);
+          const task = () => saveLocalResContent(uri, pathToSave);
           return { title, task };
         }));
       const savingLocalResourses = tasks.run();
