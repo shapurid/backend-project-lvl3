@@ -1,6 +1,5 @@
 import path from 'path';
-
-const removeEndSlash = (str) => (str.slice(-1) === '/' ? str.slice(0, -1) : str);
+import { trimEnd } from 'lodash';
 
 const normalizeExt = (link) => {
   const regexp = new RegExp('(\\?.*)$', 'i');
@@ -11,14 +10,14 @@ const normalizeExt = (link) => {
 export const formHtmlFileName = (link) => {
   const { hostname, pathname } = new URL(link);
   const urlWithoutProtocol = path.join(hostname, pathname);
-  const nameOfHtmlFile = removeEndSlash(urlWithoutProtocol).replace(/[^\w]+/g, '-');
+  const nameOfHtmlFile = trimEnd(urlWithoutProtocol, '/').replace(/\W+/g, '-');
   return nameOfHtmlFile;
 };
 
 export const formLocalFilePath = (link, localResDir) => {
   const { dir, name } = path.parse(link);
   const linkWithoutExt = path.join(dir, name);
-  const nameOfLink = removeEndSlash(linkWithoutExt).replace(/[\W]/g, '-');
+  const nameOfLink = trimEnd(linkWithoutExt, '/').replace(/\W/g, '-');
   const extOfFile = normalizeExt(link);
   return path.join(localResDir, `${nameOfLink.slice(1)}${extOfFile}`);
 };
