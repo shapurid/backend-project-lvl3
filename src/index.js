@@ -1,5 +1,6 @@
 import axios from 'axios';
 import path from 'path';
+import { URL } from 'url';
 import { promises as fs } from 'fs';
 import cheerio from 'cheerio';
 import { toPairs, isEmpty } from 'lodash';

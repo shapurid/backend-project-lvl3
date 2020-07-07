@@ -1,5 +1,6 @@
 import path from 'path';
 import { trimEnd } from 'lodash';
+import { URL } from 'url';
 
 const normalizeExt = (link) => {
   const regexp = new RegExp('(\\?.*)$', 'i');
@@ -17,7 +18,7 @@ export const formHtmlFileName = (link) => {
 export const formLocalFilePath = (link, localResDir) => {
   const { dir, name } = path.parse(link);
   const linkWithoutExt = path.join(dir, name);
-  const nameOfLink = trimEnd(linkWithoutExt, '/').replace(/\W/g, '-');
+  const nameOfLink = trimEnd(linkWithoutExt, '/').replace(/\W+/g, '-');
   const extOfFile = normalizeExt(link);
   return path.join(localResDir, `${nameOfLink.slice(1)}${extOfFile}`);
 };
