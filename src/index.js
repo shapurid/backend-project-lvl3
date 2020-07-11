@@ -7,7 +7,7 @@ import { toPairs, isEmpty } from 'lodash';
 import debug from 'debug';
 import Listr from 'listr';
 import { formHtmlFileName, formLocalFilePath } from './nameFormers';
-import errHandler from './errors';
+import handleErrs from './errors';
 import 'axios-debug-log';
 
 const log = debug('page-loader');
@@ -23,7 +23,7 @@ const getLinkFromNode = (node) => {
   return attribs[searchedTag[name]];
 };
 
-const isLocal = (checkedLink) => {
+const isLinkWithoutProtocol = (checkedLink) => {
   try {
     URL(checkedLink);
     return false;
@@ -39,7 +39,7 @@ const getLocalResLinksAndModifyHtml = (html, addr, localResDirPath) => {
     .flatMap(([key, value]) => $(`${key}[${value}]`)
       .toArray()
       .map(getLinkFromNode)
-      .filter(isLocal)
+      .filter(isLinkWithoutProtocol)
       .map((link) => {
         const uri = new URL(link, addr);
         log(`URL is formed: ${uri}`);
@@ -64,7 +64,7 @@ const saveLocalResContent = (uri, pathToFile) => {
       return fs.writeFile(pathToFile, content);
     })
     .catch((err) => {
-      console.error(errHandler(err));
+      console.error(handleErrs(err));
     });
 };
 
@@ -106,7 +106,7 @@ export default (webAdress, outputDirPath) => {
       return Promise.all([savingHtml, savingLocalResourses]);
     })
     .catch((err) => {
-      const handledError = errHandler(err);
+      const handledError = handleErrs(err);
       throw new Error(handledError);
     });
 };
